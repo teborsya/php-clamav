@@ -170,7 +170,7 @@ function yesNo(bool $value): string
                 <li>If <code>clamdscan</code> is unavailable, this sample will try <code>clamscan</code> as fallback.</li>
                 <li>On Linux, ClamAV is commonly installed using the package manager and signatures are updated with <code>freshclam</code>.</li>
                 <li>If you are on Windows and do not want a native setup, you can use <strong>VMware or VirtualBox</strong>, install Ubuntu Linux inside it, then install and run ClamAV there.</li>
-                <li>You may also use the official Windows build of ClamAV if you prefer native Windows testing.</li>
+                <li>You may also use the official Windows build of <a href="https://www.clamav.net/downloads#collapseWindowsproduction">ClamAV</a> if you prefer native Windows testing.</li>
             </ul>
 
             <h3>Example Linux Commands</h3>
