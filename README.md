@@ -19,7 +19,7 @@ If infected, reject or quarantine it
 Using clamd is usually better than repeatedly calling clamscan, because clamd is a multi-threaded daemon designed for scanning through a local or TCP socket.
 
 3. ClamAV Components
-freshclam
+{freshclam}
 
 Updates ClamAV’s official signature databases.
 
