@@ -36,3 +36,41 @@ clamdscan
 Client that sends scan requests to the clamd daemon.
 
 4. Server Preparation
+Ubuntu / Debian example
+
+sudo apt update
+sudo apt install clamav clamav-daemon -y
+sudo systemctl stop clamav-freshclam
+sudo freshclam
+sudo systemctl start clamav-freshclam
+sudo systemctl enable clamav-freshclam
+sudo systemctl enable clamav-daemon
+sudo systemctl start clamav-daemon
+
+After installation, make sure signatures are updated and clamd is running. ClamAV documentation notes that you need a valid configuration and signatures before using freshclam, clamscan, or clamdscan.
+
+Check versions
+
+clamscan --version
+freshclam --version
+
+Check daemon/socket configuration
+clamd listens on the socket configured in clamd.conf, either via LocalSocket or TCP settings.
+common socket paths:
+sudo find / -name "clamd.ctl" 2>/dev/null
+sudo grep -E "^(LocalSocket|TCPSocket|TCPAddr)" /etc/clamav/clamd.conf
+
+5. Native PHP Integration
+
+There are two common ways:
+Option A: Call clamdscan from PHP
+
+This is the simplest approach on the same server.
+
+Option B: Connect directly to the clamd socket
+This is more advanced but cleaner for larger systems.
+
+For many PHP projects, Option A is the easiest to maintain.
+
+6. Native PHP Example Using clamdscan
+   
