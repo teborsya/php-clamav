@@ -19,21 +19,19 @@ If infected, reject or quarantine it
 Using clamd is usually better than repeatedly calling clamscan, because clamd is a multi-threaded daemon designed for scanning through a local or TCP socket.
 
 3. ClamAV Components
-{freshclam}
-
+### `freshclam`
 Updates ClamAV’s official signature databases.
 
-clamd
-
+### `clamd`
 Daemon process that loads the signatures and listens for scan commands over a Unix socket or TCP socket.
 
-clamscan
+### `clamscan`
+Standalone command-line scanner. It does not require `clamd`, but for web uploads it is usually less efficient than daemon-based scanning.
 
-Standalone command-line scanner. It does not require clamd, but for web uploads it is usually less efficient than daemon-based scanning.
+### `clamdscan`
+Client that sends scan requests to the `clamd` daemon.
 
-clamdscan
-
-Client that sends scan requests to the clamd daemon.
+---
 
 4. Server Preparation
 Ubuntu / Debian example
