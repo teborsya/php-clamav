@@ -73,4 +73,97 @@ This is more advanced but cleaner for larger systems.
 For many PHP projects, Option A is the easiest to maintain.
 
 6. Native PHP Example Using clamdscan
-   
+Simple scanner class
+   php-native/ClamAvScanner.php
+
+Native PHP upload handler example
+php-native/upload.php
+
+7. Laravel Integration
+
+Laravel already provides request validation and convenient uploaded-file storage methods. You can validate first, scan the temp file, then store the file only when it passes the scan. Laravel’s validation and filesystem features are documented in the official docs, and uploaded files can be stored using methods like store() or putFile().
+
+.env
+CLAMAV_ENABLED=true
+CLAMAV_BINARY=/usr/bin/clamdscan
+CLAMAV_ARGS="--no-summary"
+CLAMAV_FAIL_CLOSED=true
+
+config/clamav.php
+laravel-example/config/clamav.php
+
+Service class
+app/Services/ClamAvService.php
+laravel-example/app/Services/ClamAvServices.php
+
+Controller example
+laravel-example/app/Http/Controllers/UploadController.php
+
+Route
+
+use App\Http\Controllers\UploadController;
+
+Route::post('/upload', [UploadController::class, 'store'])->name('upload.store');
+
+8. Quarantine Option
+
+Instead of fully rejecting infected files, you can move them to a protected quarantine folder outside the public web root.
+
+Example:
+$quarantinePath = storage_path('app/quarantine');
+if (!is_dir($quarantinePath)) {
+    mkdir($quarantinePath, 0755, true);
+}
+
+$file->move($quarantinePath, uniqid('infected_', true) . '_' . $file->getClientOriginalName());
+
+Best practice is that quarantined files should not be publicly accessible.
+
+9. Recommended Security Rules
+Validate file type and size before scanning. Laravel supports upload validation and MIME / extension checks in its validation system.
+Scan the uploaded temporary file before permanent storage.
+Store accepted files outside the public directory whenever possible.
+Keep freshclam updating signatures regularly, because the malware database is what powers detections.
+Prefer clamd for production upload scanning.
+Log scanner failures and decide whether your app should be fail-closed or fail-open.
+Fail-closed: if scanner is down, block uploads
+Fail-open: if scanner is down, allow uploads but log the risk
+
+10. Testing the Integration
+
+You can test with the standard EICAR antivirus test file. ClamAV documentation shows it being detected as Win.Test.EICAR_HDB-1, which makes it useful for safe testing without using real malware.
+
+Example EICAR string
+
+Create a file named eicar.com.txt with this exact single line:
+X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+
+Then scan it:
+clamscan eicar.com.txt
+
+Expected result: ClamAV should flag it.
+
+11. Health Check Commands
+
+Useful commands for server monitoring:
+systemctl status clamav-daemon
+systemctl status clamav-freshclam
+freshclam --version
+clamscan --version
+sudo tail -f /var/log/clamav/freshclam.log
+sudo grep -E "^(LocalSocket|TCPSocket|TCPAddr)" /etc/clamav/clamd.conf
+
+ClamAV also provides clamconf to inspect configuration and environment details.
+
+12. Production Notes
+Same-server setup
+
+Best for Laravel or native PHP hosted on the same Linux server as ClamAV.
+
+Remote scanner setup
+
+Possible using TCP socket with clamd, but keep it on a private network or firewall-restricted interface. clamd supports both Unix local sockets and TCP sockets.
+
+Docker option
+
+ClamAV also provides official Docker images, including daemon-based use cases.
